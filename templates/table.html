@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+  <head>
+    <title>My Form</title>
+  </head>
+  <body>
+    <h1>My Form</h1>
+    <form action="/submit" method="post">
+      <label for="option">Select an option:</label>
+      <select id="option" name="option">
+        {% for option in options %}
+        <option value="{{ option[0] }}">{{ option[0] }}</option>
+        {% endfor %}
+      </select>
+      <br><br>
+      <input type="submit" value="Submit">
+    </form>
+  </body>
+</html>
