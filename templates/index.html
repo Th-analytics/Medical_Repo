@@ -215,6 +215,9 @@
   </head>
   <body>
   <script>
+      window.onload = function() {
+			localStorage.setItem('data', '');
+		};
 
       $(document).ready(function() {
         // Populate dropdown1 with options from backend
@@ -396,6 +399,7 @@
                 success: function(data) {
                   // Redirect to results page with the returned data
                   window.location.href = '/results?data=' + encodeURIComponent(JSON.stringify(data));
+
                 },
                 error: function() {
                   alert('Error retrieving results');
@@ -411,8 +415,20 @@
   <div class="testbox">
       <form>
           <div class="banner">
-              <h1>Aprna's Project</h1>
+              <h1>Lab Test Price Predictor</h1>
           </div>
+          {% if data != '' %}
+
+              {% if data is none %}
+              {% set d = data[0]|round(2) %}
+              {% else %}
+              {% set d = data[0] %}
+              {% endif %}
+          <div>
+              <legend>Predicted Price: <h2 style="color:white">{{d}}</h2></legend>
+          </div>
+          {% endif %}
+
           <br/>
           <br/>
 

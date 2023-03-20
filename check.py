@@ -69,7 +69,8 @@ def getPrice(dataDict):
 
 @app.route('/')
 def index():
-    return render_template('test.html')
+
+    return render_template('index.html', data='')
 
 
 @app.route('/get_options', methods=['GET'])
@@ -198,8 +199,11 @@ def get_results():
 
 @app.route('/results')
 def results():
-    data = json.loads(request.args.get('data'))
-    return render_template('result.html', data=data)
+    if json.loads(request.args.get('data')) is None:
+        data = ''
+    else:
+        data = json.loads(request.args.get('data'))
+    return render_template('index.html', data=data)
 
 
 if __name__ == '__main__':
