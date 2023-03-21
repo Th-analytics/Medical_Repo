@@ -69,7 +69,9 @@ def getPrice(dataDict):
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+
+    return render_template('index.html', data='')
+
 
 @app.route('/get_options', methods=['GET'])
 def get_options():
@@ -175,6 +177,7 @@ def get_lab():
 
     obj = GetData()
     obj.createConnection()
+    print(dtn,state,district,pincode,region,area)
     curObj = obj.cur.execute(f"SELECT DISTINCT Lab_Name FROM"
                              f" dtest where `Diagnostic Test Name`='{dtn}' and State='{state}'"
                              f"and District = '{district}' and Pincode = '{pincode}' and Region = '{region}'"
@@ -188,6 +191,7 @@ def get_lab():
 # Result
 @app.route('/get_results', methods=['POST'])
 def get_results():
+    print("In get Results")
     print(request.get_json())
     data = getPrice(dataDict=request.get_json())
     return jsonify(data)
@@ -195,9 +199,12 @@ def get_results():
 
 @app.route('/results')
 def results():
-    data = json.loads(request.args.get('data'))
-    return render_template('result.html', data=data)
+    if json.loads(request.args.get('data')) is None:
+        data = ''
+    else:
+        data = json.loads(request.args.get('data'))
+    return render_template('index.html', data=data)
 
 
 if __name__ == '__main__':
-    app.run(port=7000, debug=True)
+    app.run(port=8000, debug=True)
