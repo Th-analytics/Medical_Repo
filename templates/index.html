@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Dropdown Example</title>
+    <title>Drug Database</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <style>
@@ -214,261 +214,106 @@
 
   </head>
   <body>
-  <script>
-      window.onload = function() {
-			localStorage.setItem('data', '');
-		};
+  <script type=text/javascript>
+      $(document).ready(function () {
+            var $diseaseName = $('#diseaseName');
+            var $drugName = $('#drugName');
 
-      $(document).ready(function() {
-        // Populate dropdown1 with options from backend
-        $.ajax({
-          type: 'GET',
-          url: '/get_options',
-          success: function(data) {
-            var dropdown1 = $('#dropdown1');
-            dropdown1.empty();
-            for (var i = 0; i < data.length; i++) {
-              dropdown1.append($('<option></option>').attr('value', data[i]).text(data[i]));
-            }
-          },
-          error: function() {
-            alert('Error retrieving options');
-          }
-        });
+            $.ajax({
+                url: '/get_options',
+                type: 'GET',
+                dataType: 'json',
+                success: function (response) {
+                    console.log(response);
+                    var disease_options = response.disease;
+                    var drug_options = response.drug;
 
-        // When dropdown1 is changed, populate dropdown2 with data based on the selected option
-        $('#dropdown1').on('change', function() {
-          $.ajax({
-            type: 'POST',
-            url: '/get_data',
-            data: JSON.stringify({'dt': $('#dropdown1').val()}),
-            contentType: 'application/json;charset=UTF-8',
-            success: function(data) {
-              var dropdown2 = $('#dropdown2');
-              dropdown2.empty();
-              for (var i = 0; i < data.length; i++) {
-                dropdown2.append($('<option></option>').attr('value', data[i]).text(data[i]));
-              }
-            },
-            error: function() {
-              alert('Error retrieving data');
-            }
-          });
-        });
+                    $.each(disease_options, function (key, value) {
+                        $diseaseName.append('<option value="' + value + '">' + value + '</option>');
+                    });
 
-        //DropDown 3
-        $('#dropdown2').on('change', function() {
-          $.ajax({
-            type: 'POST',
-            url: '/get_district',
-            data: JSON.stringify({
-                            'dtn': $('#dropdown1').val(),
-                            'state': $('#dropdown2').val()
-                                }),
-            contentType: 'application/json;charset=UTF-8',
-            success: function(data) {
-              var dropdown3 = $('#dropdown3');
-              dropdown3.empty();
-              for (var i = 0; i < data.length; i++) {
-                dropdown3.append($('<option>Select</option>').attr('value', data[i]).text(data[i]));
-              }
-            },
-            error: function() {
-              alert('Error retrieving data');
-            }
-          });
-        });
-        // dropDown4
-        $('#dropdown3').on('change', function() {
-          $.ajax({
-            type: 'POST',
-            url: '/get_pincode',
-            data: JSON.stringify({
-                            'dtn': $('#dropdown1').val(),
-                            'state': $('#dropdown2').val(),
-                            'district': $('#dropdown3').val()
-                                }),
-            contentType: 'application/json;charset=UTF-8',
-            success: function(data) {
-              var dropdown4 = $('#dropdown4');
-              dropdown4.empty();
-              for (var i = 0; i < data.length; i++) {
-                dropdown4.append($('<option></option>').attr('value', data[i]).text(data[i]));
-              }
-            },
-            error: function() {
-              alert('Error retrieving data');
-            }
-          });
-        });
-
-        //DropDown5
-        $('#dropdown4').on('change', function() {
-          $.ajax({
-            type: 'POST',
-            url: '/get_region',
-            data: JSON.stringify({
-                            'dtn': $('#dropdown1').val(),
-                            'state': $('#dropdown2').val(),
-                            'district': $('#dropdown3').val(),
-                            'pincode':$('#dropdown4').val()
-                                }),
-            contentType: 'application/json;charset=UTF-8',
-            success: function(data) {
-              var dropdown5 = $('#dropdown5');
-              dropdown5.empty();
-              for (var i = 0; i < data.length; i++) {
-                dropdown5.append($('<option></option>').attr('value', data[i]).text(data[i]));
-              }
-            },
-            error: function() {
-              alert('Error retrieving data');
-            }
-          });
-        });
-
-        //dropDown6 Area
-        $('#dropdown5').on('change', function() {
-          $.ajax({
-            type: 'POST',
-            url: '/get_area',
-            data: JSON.stringify({
-                            'dtn': $('#dropdown1').val(),
-                            'state': $('#dropdown2').val(),
-                            'district': $('#dropdown3').val(),
-                            'pincode':$('#dropdown4').val(),
-                            'region': $('#dropdown5').val()
-                                }),
-            contentType: 'application/json;charset=UTF-8',
-            success: function(data) {
-              var dropdown6 = $('#dropdown6');
-              dropdown6.empty();
-              for (var i = 0; i < data.length; i++) {
-                dropdown6.append($('<option></option>').attr('value', data[i]).text(data[i]));
-              }
-            },
-            error: function() {
-              alert('Error retrieving data');
-            }
-          });
-        });
-
-
-        //dropDown7 Lab Name
-        $('#dropdown6').on('change', function() {
-          $.ajax({
-            type: 'POST',
-            url: '/get_lab',
-            data: JSON.stringify({
-                            'dtn': $('#dropdown1').val(),
-                            'state': $('#dropdown2').val(),
-                            'district': $('#dropdown3').val(),
-                            'pincode':$('#dropdown4').val(),
-                            'region': $('#dropdown5').val(),
-                            'area':$('#dropdown6').val()
-                                }),
-            contentType: 'application/json;charset=UTF-8',
-            success: function(data) {
-              var dropdown7 = $('#dropdown7');
-              dropdown7.empty();
-              for (var i = 0; i < data.length; i++) {
-                dropdown7.append($('<option></option>').attr('value', data[i]).text(data[i]));
-              }
-            },
-            error: function() {
-              alert('Error retrieving data');
-            }
-          });
-        });
-
-        // Select
-        $('#select-button').on('click', function() {
-              $.ajax({
-                type: 'POST',
-                url: '/get_results',
-                data: JSON.stringify({
-                            'dtn': $('#dropdown1').val(),
-                            'state': $('#dropdown2').val(),
-                            'district': $('#dropdown3').val(),
-                            'pincode':$('#dropdown4').val(),
-                            'region': $('#dropdown5').val(),
-                            'area':$('#dropdown6').val(),
-                            'lab':$('#dropdown7').val()
-                                }),
-                contentType: 'application/json;charset=UTF-8',
-                success: function(data) {
-                  // Redirect to results page with the returned data
-                  window.location.href = '/results?data=' + encodeURIComponent(JSON.stringify(data));
+                    $.each(drug_options, function (key, value) {
+                        $drugName.append('<option value="' + value + '">' + value + '</option>');
+                    });
 
                 },
-                error: function() {
-                  alert('Error retrieving results');
+                error: function (error) {
+                    console.log(error);
                 }
-              });
             });
 
+            $diseaseName.change(function() {
+                $drugName.attr('disabled', true);
+                $drugName.children('option:not(:first)').remove();
+            });
 
-      });
+            $drugName.change(function() {
+                $diseaseName.attr('disabled', true);
+                $diseaseName.children('option:not(:first)').remove();
+            });
 
+            $("#getResult").click(function () {
+                var data_dict = {
+                    'diseaseName': $diseaseName.val(),
+                    'drugName': $drugName.val()
+                };
+
+                $.ajax({
+                    url: '/get_results',
+                    type: 'POST',
+                    data: JSON.stringify(data_dict),
+                    contentType: 'application/json;charset=UTF-8',
+                    success: function (response) {
+                        console.log(response);
+                        $('#data').empty().append(response.html_table);
+                        $('#data').show();
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
+            });
+
+        });
 
     </script>
-  <div class="testbox">
-      <form>
-          <div class="banner">
-              <h1>Lab Test Price Predictor</h1>
-          </div>
-          {% if data != '' %}
+</br>
+  </br>
+<div>Find your disease or condition and discover what medication options are available for you.
+<br>
+( or )
+<br>
+Find the drug and discover what conditions can be cured</div>
+  </br>
+  </br>
+<div>
+    <table>
+        <tr>
+            <td>Disease Name:</td>
+            <td>
+                <select id="diseaseName">
+                    <option value="Select">Select</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>Drug Name:</td>
+            <td>
+                <select id="drugName">
+                    <option value="Select">Select</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" align="center">
+                <button id="getResult">Get Data</button>
+            </td>
+        </tr>
+    </table>
 
-              {% if data is none %}
-              {% set d = data[0]|round(2) %}
-              {% else %}
-              {% set d = data[0] %}
-              {% endif %}
-          <div>
-              <legend>Predicted Price: <h2 style="color:white">{{d}}</h2></legend>
-          </div>
-          {% endif %}
+</div>
 
-          <br/>
-          <br/>
+<div id="data" style="display:none"></div>
 
-              <legend>Choose Values</legend>
-
-
-                  <label for="Diagnostic Test Name">Diagnostic Test Name:</label>
-                  <select id="dropdown1"></select>
-
-                  <br/>
-                  <br/>
-                  <label for="state">State:</label>
-                  <select id="dropdown2"></select>
-                  <br/>
-                  <br/>
-                  <label for="District">District:</label>
-                  <select id="dropdown3"></select>
-
-                  <br/>
-                  <br/>
-
-                  <label for="Pincode">Pincode:</label>
-                  <select id="dropdown4"></select>
-                  <br/>
-                  <br/>
-                  <label for="Region">Region:</label>
-                  <select id="dropdown5"></select>
-                  <br/>
-                  <br/>
-                  <label for="Area">Area:</label>
-                  <select id="dropdown6"></select>
-                  <br/>
-                  <br/>
-                  <label for="Lab Name">Lab Name:</label>
-                  <select id="dropdown7"></select>
-                  <br/>
-                  <br/>
-                  <button id="select-button">Select</button>
-
-              </form>
-  </div>
-          </body>
+</body>
   </html>

@@ -2,23 +2,23 @@ import sqlite3
 import pandas as pd
 
 
-# #Creating a sql connection to db data
-# conn = sqlite3.connect('db/pathlab.db')
+#Creating a sql connection to db data
+# conn = sqlite3.connect('db/MedicalDrug.db')
 # curr = conn.cursor()
 #
 # # Uploading excel file into the sqlllite db
-# df = pd.read_excel('excelFile/TBTest_Consolidated.xlsx', engine='openpyxl',index_col=[0])
-# df.to_sql('dtest', con=conn, if_exists='replace')
+# df = pd.read_csv('excelFile/drugData_p1.csv', index_col=[0])
+# df.to_sql('drugData', con=conn, if_exists='replace')
 #
 # # Fetching Data
-# f = curr.execute("SELECT * FROM dtest").fetchall()
-# df = pd.read_sql("SELECT * FROM dtest", con=conn)
+# f = curr.execute("SELECT * FROM drugData").fetchall()
+# df = pd.read_sql("SELECT * FROM drugData", con=conn)
 # print(df)
 
 class GetData:
 
     def __init__(self):
-        self.dbname = 'db/pathlab.db'
+        self.dbname = 'db/MedicalDrug.db'
         self.con = None
         self.cur = None
 
@@ -45,9 +45,13 @@ class GetData:
         df = pd.read_sql(query, con=self.con)
         return df.values
 
-#
-# if __name__ == "__main__":
-#     obj = GetData()
-#     obj.createConnection()
-#     print(obj.pullData("SELECT Distinct `Diagnostic Test Name` FROM dtest"))
-#     print(obj.cur.execute("SELECT DISTINCT `Diagnostic Test Name` FROM dtest"))
+
+if __name__ == "__main__":
+    col = ['Disease', 'Drug_name', 'Generic_name', 'Brand_names', 'Drug_class','Rx_OTC', 'Pregnancy', 'CSA', 'Alcohol']
+    obj = GetData()
+    obj.createConnection()
+    data = obj.pullData("SELECT * FROM  drugData where Drug_name = 'aspirin'")
+    df = pd.DataFrame(data, columns=col)
+    print(df.head(10))
+
+    #print(obj.cur.execute("SELECT DISTINCT `Diagnostic Test Name` FROM dtest"))
