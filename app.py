@@ -1,6 +1,8 @@
-from flask import Flask, request, jsonify, render_template, render_template_string
+from flask import Flask, request, jsonify, render_template, render_template_string, send_file, make_response
 from sqlLite import GetData
 import pandas as pd
+import shutil
+import os
 
 app = Flask(__name__)
 
@@ -11,6 +13,12 @@ def getValues(cur_obj):
     for i in cur_obj.fetchall():
         data_list.append(i[0])
     return data_list
+
+
+def delete_files_in_directory(directory):
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            os.remove(os.path.join(root, file))
 
 
 def getPrice(dataDict):
@@ -40,6 +48,7 @@ def getPrice(dataDict):
 
 @app.route('/')
 def index():
+    delete_files_in_directory("dataFile")
     return render_template('index.html', data='')
 
 
@@ -75,7 +84,7 @@ def get_results():
     elif drugName_ != "Select":
         fileName = drugName_
 
-    df_.to_csv(f"dataFile/{fileName}.csv", index=[0])
+    df_.to_csv(f"dataFile/{fileName}.csv", index=False)
 
     html_table = df_.to_html(classes='table table-striped',
                              header=True, index=False,
@@ -89,6 +98,25 @@ def get_results():
     return jsonify(html_table=html_table)
 
 
+
+@app.route('/data')
+def download_data():
+    fileName = request.args.get('fileName')
+    diseaseName = request.args.get('diseaseName')
+    drugName = request.args.get('drugName')
+    filePath = os.path.join('dataFile', fileName)
+    if os.path.exists(filePath):
+        response = make_response(send_file(filePath, as_attachment=True))
+        response.headers['Content-Disposition'] = f'attachment; filename={fileName}'
+        response.headers['Content-Type'] = 'text/csv'
+        response.headers['Cache-Control'] = 'no-cache'
+        if diseaseName:
+            response.set_cookie('diseaseName', diseaseName)
+        if drugName:
+            response.set_cookie('drugName', drugName)
+        return response
+    else:
+        return jsonify({'status': 'error', 'message': f'{fileName} not found'})
 @app.route('/results', methods=['POST'])
 def results():
     print("In results:")

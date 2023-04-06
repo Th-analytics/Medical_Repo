@@ -157,6 +157,7 @@
       input[type=radio]:checked + label:before, label.radio:hover:before {
       border: 2px solid  #006622;
       }
+
       label.radio:after {
       content: "";
       position: absolute;
@@ -181,18 +182,51 @@
       margin-top: 10px;
       text-align: center;
       }
+
+
+    #download-btn {
+        color: #fff;
+        background-color: darkgrey;
+        padding: 8px 16px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        border-radius: 5px;
+        margin-right: 20px;
+    }
+
+    #download-btn.enabled {
+        background-color: darkgrey;
+        cursor: pointer;
+    }
+
+    #download-btn.disabled {
+        background-color: darkgrey;
+        cursor: default;
+    }
+
+    #download-btn:hover:not(.disabled) {
+        background-color: darkgrey;
+    }
+
+    header {
+	background-color: #f2f2f2;
+	padding: 20px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
       button {
       width: 150px;
       padding: 10px;
       border: none;
       border-radius: 5px;
-      background:  #006622;
+      background:  darkgrey;
       font-size: 16px;
       color: #fff;
       cursor: pointer;
-      }
-      button:hover {
-      background:  #00b33c;
       }
       @media (min-width: 568px) {
       .name-item, .city-item {
@@ -274,18 +308,48 @@
                 });
             });
 
+            $('#download-btn').click(function () {
+
+
+                var diseaseName = $('#diseaseName').val();
+                var drugName = $('#drugName').val();
+                var fileName = '';
+                if (diseaseName != 'Select') {
+                    fileName = diseaseName + '.csv';
+                } else if (drugName != 'Select') {
+                    fileName = drugName + '.csv';
+                }
+                if (fileName) {
+                    var downloadUrl = '/data?fileName=' + fileName;
+                    if (diseaseName != 'Select') {
+                        downloadUrl += '&diseaseName=' + diseaseName;
+                    }
+                    if (drugName != 'Select') {
+                        downloadUrl += '&drugName=' + drugName;
+                    }
+                    window.location.href = downloadUrl;
+                } else {
+                    alert('Please select a disease or drug to download data.');
+                }
+            });
+
+
+
+
         });
 
     </script>
-</br>
-  </br>
-<div>Find your disease or condition and discover what medication options are available for you.
+  <header>
+Find your disease or condition and discover what medication options are available for you.
 <br>
 ( or )
 <br>
-Find the drug and discover what conditions can be cured</div>
+Find the drug and discover what conditions can be cured
+
+	</header>
+</br>
   </br>
-  </br>
+<div align="right"><a href="#" id="download-btn">Download Data</a></div>
 <div>
     <table>
         <tr>
